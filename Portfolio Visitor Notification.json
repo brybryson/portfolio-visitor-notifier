@@ -1,0 +1,100 @@
+{
+  "name": "Portfolio Visitor Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "[REDACTED_WEBHOOK_ID]",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "688f1c7f-40dd-49bf-aac0-2b4bdaeb1c5a",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "[REDACTED_WEBHOOK_ID]"
+    },
+    {
+      "parameters": {
+        "url": "=https://ipwho.is/{{ $json.headers[\"x-forwarded-for\"] ? $json.headers[\"x-forwarded-for\"].split(\",\")[0].trim() : \"\" }}",
+        "options": {}
+      },
+      "id": "fdd44bd9-5fb2-4d73-b314-e38a30bf2b54",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "[REDACTED_TELEGRAM_CHAT_ID]",
+        "text": "=🔔 <b>New Portfolio Visitor</b>\n<i>{{ $now.setZone(\"Asia/Manila\").toFormat(\"MMMM d, yyyy · h:mm a\") }}</i>\n\n━━━━━━━━━━━━━━━\n\n📍 <b>Location</b>\n   ┌ <b>City:</b>  {{ $json.city || \"N/A\" }}\n   ├ <b>Region:</b>  {{ $json.region || \"N/A\" }}\n   └ <b>Country:</b>  {{ $json.country || \"N/A\" }} {{ $json.flag?.emoji || \"\" }}\n\n🌐 <b>Network</b>\n   ┌ <b>ISP:</b>  {{ $json.connection?.isp || \"N/A\" }}\n   └ <b>IP:</b>  <code>{{ $json.ip || \"N/A\" }}</code>",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "ac08580d-e813-44f8-9517-09c08ade8bb9",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        0
+      ],
+      "webhookId": "[REDACTED_WEBHOOK_ID]",
+        "credentials": {
+          "telegramApi": {
+            "id": "[REDACTED_TELEGRAM_CRED_ID]",
+            "name": "Telegram account"
+          }
+        }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0ebaface-549d-4f51-a5eb-b24d7d0881ae",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "[REDACTED_N8N_INSTANCE_ID]"
+  },
+  "nodeGroups": [],
+  "id": "L8yBCB3khPziZtTw",
+  "tags": []
+}
